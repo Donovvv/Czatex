@@ -1,0 +1,29 @@
+<html><body>
+Witaj <div id="login"></div><br>
+Zalogowałeś się poprawnie.<br>
+Twoja ostatnia wiadomość to:</br>
+<div id="lastmessage"></div>
+
+ </br>
+<div id="countfiles"></div>
+
+Przejdź do:<br>
+<a href="http://127.0.0.1/files">Zarządzania plikami</a></br>
+<a href="http://127.0.0.1/chat">Chatu</a></html></br>
+<a href="http://127.0.0.1/">Wyloguj</a>
+<script>
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var obj = JSON.parse(this.responseText);
+      console.log(this.responseText);
+      document.getElementById("login").innerText = obj['user']['username'];
+      document.getElementById("lastmessage").innerText = obj['lastmessage'];
+      document.getElementById("countfiles").innerText = "Aktualnie masz " + obj['countfiles'] + " wysłanych plików";
+    }
+  };
+  xhttp.open("GET", "/api/info", true);
+  xhttp.setRequestHeader("Authorization", localStorage.token);
+  xhttp.send();
+</script></body>
+</html>

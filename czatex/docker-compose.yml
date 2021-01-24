@@ -1,0 +1,61 @@
+version: "2"
+services:
+  apiupload:
+    build: ./upload
+    links:
+      - db_upload
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./filestorage:/filestorage/:rw
+  db_upload:
+    image: mysql:5.7
+    ports:
+      - "32000:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: api
+    volumes:
+      - ./db_upload:/docker-entrypoint-initdb.d/:ro
+  apilogowanie:
+    build: ./logowanie
+    links:
+      - db_logowanie
+    ports:
+      - "5000:5000"
+  db_logowanie:
+    image: mysql:5.7
+    ports:
+      - "32001:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: api
+    volumes:
+      - ./db_logowanie:/docker-entrypoint-initdb.d/:ro
+  apichat:
+    build: ./chat
+    links:
+      - db_chat
+    ports:
+      - "5001:5001"
+  db_chat:
+    image: mysql:5.7
+    ports:
+      - "32002:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 1
+      MYSQL_DATABASE: api
+    volumes:
+      - ./db_chat:/docker-entrypoint-initdb.d/:ro
+  reverse:
+    container_name: reverse
+    hostname: reverse
+    image: nginx
+    links:
+      - apichat
+      - apilogowanie
+      - apiupload
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/:ro
